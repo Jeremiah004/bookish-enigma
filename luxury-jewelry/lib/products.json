@@ -1,0 +1,171 @@
+[
+  {
+    "sku": "APPLE-10",
+    "brand": "Apple",
+    "name": "Apple Gift Card - $10",
+    "price": 10,
+    "denomination": "$10",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
+  },
+  {
+    "sku": "APPLE-25",
+    "brand": "Apple",
+    "name": "Apple Gift Card - $25",
+    "price": 25,
+    "denomination": "$25",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
+  },
+  {
+    "sku": "APPLE-50",
+    "brand": "Apple",
+    "name": "Apple Gift Card - $50",
+    "price": 50,
+    "denomination": "$50",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
+  },
+  {
+    "sku": "APPLE-100",
+    "brand": "Apple",
+    "name": "Apple Gift Card - $100",
+    "price": 100,
+    "denomination": "$100",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
+  },
+  {
+    "sku": "APPLE-200",
+    "brand": "Apple",
+    "name": "Apple Gift Card - $200",
+    "price": 200,
+    "denomination": "$200",
+    "type": "gift-card",
+    "stock": 50,
+    "images": [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
+  },
+  {
+    "sku": "XBOX-10",
+    "brand": "Xbox",
+    "name": "Xbox Gift Card - $10",
+    "price": 10,
+    "denomination": "$10",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
+  },
+  {
+    "sku": "XBOX-25",
+    "brand": "Xbox",
+    "name": "Xbox Gift Card - $25",
+    "price": 25,
+    "denomination": "$25",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
+  },
+  {
+    "sku": "XBOX-50",
+    "brand": "Xbox",
+    "name": "Xbox Gift Card - $50",
+    "price": 50,
+    "denomination": "$50",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
+  },
+  {
+    "sku": "XBOX-100",
+    "brand": "Xbox",
+    "name": "Xbox Gift Card - $100",
+    "price": 100,
+    "denomination": "$100",
+    "type": "gift-card",
+    "stock": 75,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
+  },
+  {
+    "sku": "PLAYSTATION-10",
+    "brand": "PlayStation",
+    "name": "PlayStation Gift Card - $10",
+    "price": 10,
+    "denomination": "$10",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and subscriptions on PlayStation Store. Works on PlayStation 5, PlayStation 4, and PlayStation VR."
+  },
+  {
+    "sku": "PLAYSTATION-25",
+    "brand": "PlayStation",
+    "name": "PlayStation Gift Card - $25",
+    "price": 25,
+    "denomination": "$25",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and subscriptions on PlayStation Store. Works on PlayStation 5, PlayStation 4, and PlayStation VR."
+  },
+  {
+    "sku": "PLAYSTATION-50",
+    "brand": "PlayStation",
+    "name": "PlayStation Gift Card - $50",
+    "price": 50,
+    "denomination": "$50",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and subscriptions on PlayStation Store. Works on PlayStation 5, PlayStation 4, and PlayStation VR."
+  },
+  {
+    "sku": "PLAYSTATION-100",
+    "brand": "PlayStation",
+    "name": "PlayStation Gift Card - $100",
+    "price": 100,
+    "denomination": "$100",
+    "type": "gift-card",
+    "stock": 75,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and subscriptions on PlayStation Store. Works on PlayStation 5, PlayStation 4, and PlayStation VR."
+  }
+]
