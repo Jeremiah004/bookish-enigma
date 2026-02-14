@@ -125,8 +125,33 @@ export const fetchPublicKey = async (backendUrl: string): Promise<string> => {
       console.warn('Public key may not be in PEM format, but continuing...');
     }
     
+    // Critical validation: Check if the key is complete
+    // RSA-2048 public key in PEM format should be around 294-300+ characters
+    // If it's much shorter, it's likely corrupted or incomplete
+    if (publicKey.length < 200) {
+      const errorMsg = 
+        `Invalid public key: Key is too short (${publicKey.length} chars). ` +
+        `Expected ~294-300+ characters for RSA-2048. ` +
+        `The backend may be returning corrupted or incomplete key data. ` +
+        `Please check your Render environment variables (PUBLIC_KEY).`;
+      console.error('Public key validation failed:', errorMsg);
+      console.error('Received key (first 200 chars):', publicKey.substring(0, 200));
+      throw new Error(errorMsg);
+    }
+    
+    // Check if it's a proper PEM format
+    if (!publicKey.includes('-----BEGIN PUBLIC KEY-----') && !publicKey.includes('-----BEGIN RSA PUBLIC KEY-----')) {
+      const errorMsg = 
+        `Invalid public key format: Key does not appear to be in PEM format. ` +
+        `Expected to start with "-----BEGIN PUBLIC KEY-----" or "-----BEGIN RSA PUBLIC KEY-----". ` +
+        `Received (first 100 chars): ${publicKey.substring(0, 100)}`;
+      console.error('Public key format validation failed:', errorMsg);
+      throw new Error(errorMsg);
+    }
+    
     // Log a sample for debugging (first 100 chars only)
     console.log('Received public key (first 100 chars):', publicKey.substring(0, 100));
+    console.log('Public key length:', publicKey.length, 'chars');
     
     return publicKey;
   } catch (error) {

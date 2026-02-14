@@ -199,6 +199,47 @@ Once deployed, you can access transactions:
   4. **Regenerate keys**: If the issue persists, regenerate the RSA keys locally and re-encode them for environment variables
   5. **Check backend logs**: Look for any encoding errors when the backend loads the keys
 
+- **"Key is too short" / "corrupted or incomplete key" error**: This means the backend is returning a key that's only 65-70 characters instead of ~294-300+ for RSA-2048. **Fix this immediately:**
+  1. **Generate fresh keys locally**:
+     ```bash
+     cd kreditkarte
+     npm install
+     npm run dev  # Generates keys/private.pem and keys/public.pem
+     ```
+  2. **Get the public key content**:
+     ```bash
+     # On Windows PowerShell:
+     Get-Content keys/public.pem -Raw
+     
+     # On Linux/Mac:
+     cat keys/public.pem
+     ```
+  3. **Copy the ENTIRE output** - it should look like:
+     ```
+     -----BEGIN PUBLIC KEY-----
+     MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...
+     (many more lines)
+     -----END PUBLIC KEY-----
+     ```
+  4. **In Render Dashboard**:
+     - Go to your service → Environment
+     - Find `PUBLIC_KEY` variable
+     - **Delete the old value completely**
+     - Paste the ENTIRE PEM key (including BEGIN/END lines)
+     - Make sure there are no extra spaces or line breaks at the start/end
+     - Save and redeploy
+  5. **Verify**: After redeploy, test the endpoint:
+     ```bash
+     curl https://your-backend.onrender.com/api/crypto/key
+     ```
+     Should return JSON with a `publicKey` field containing the full PEM key (~294+ chars)
+  6. **If using base64 encoding**: If you prefer base64, encode the FULL PEM key:
+     ```bash
+     # Windows PowerShell:
+     [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((Get-Content keys/public.pem -Raw)))
+     ```
+     Then paste this base64 string into `PUBLIC_KEY` in Render
+
 ## Security Notes
 
 - **Never commit RSA keys** to git
