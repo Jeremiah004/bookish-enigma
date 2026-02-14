@@ -71,7 +71,8 @@ const SESSION_HEADER_VALUE = 'research-session';
 
 export const fetchPublicKey = async (backendUrl: string): Promise<string> => {
   try {
-    const response = await fetch(`${backendUrl}/api/crypto/key`, {
+    const url = `${backendUrl}/api/crypto/key`;
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -80,12 +81,37 @@ export const fetchPublicKey = async (backendUrl: string): Promise<string> => {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch public key: ${response.statusText}`);
+      const statusText = response.statusText || `HTTP ${response.status}`;
+      let errorMessage = `Failed to fetch public key: ${statusText}`;
+      
+      if (response.status === 404) {
+        errorMessage = `Backend endpoint not found (404). Check if ${url} exists.`;
+      } else if (response.status === 0 || response.status >= 500) {
+        errorMessage = `Backend server error (${response.status}). The server may be down or unreachable.`;
+      } else if (response.status === 403 || response.status === 401) {
+        errorMessage = `Access denied (${response.status}). Check CORS and authentication settings.`;
+      }
+      
+      throw new Error(errorMessage);
     }
 
     const data = await response.json();
+    
+    if (!data || !data.publicKey) {
+      throw new Error('Invalid response: public key not found in response');
+    }
+    
     return data.publicKey;
   } catch (error) {
+    // Provide more specific error messages
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error(`Network error: Cannot connect to backend at ${backendUrl}. Check if the backend is running and the URL is correct.`);
+    }
+    
+    if (error instanceof Error) {
+      throw error; // Re-throw with the improved message from above
+    }
+    
     throw new Error(`Key fetch error: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 };

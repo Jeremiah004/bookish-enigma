@@ -180,8 +180,18 @@ Once deployed, you can access transactions:
 
 ### Frontend Issues
 
-- **Can't connect to backend**: Verify `NEXT_PUBLIC_BACKEND_URL` is set correctly
-- **Encryption fails**: Ensure backend public key endpoint is accessible
+- **"Security initialization failed" / "Payment Failed"**: This error occurs when the frontend cannot fetch the public key from the backend. Check:
+  1. **Environment Variable**: In Vercel dashboard, verify `NEXT_PUBLIC_BACKEND_URL` is set to your Render backend URL (e.g., `https://your-backend.onrender.com`)
+  2. **Backend URL Format**: Ensure the URL uses `https://` (not `http://`) and has no trailing slash
+  3. **Backend Health**: Test the backend directly:
+     - Health: `https://your-backend.onrender.com/health`
+     - Public Key: `https://your-backend.onrender.com/api/crypto/key`
+  4. **CORS Configuration**: In Render, verify `FRONTEND_ORIGIN` matches your Vercel URL exactly (including `https://`)
+  5. **Backend Status**: Check Render dashboard to ensure the backend service is running (not sleeping)
+  6. **Redeploy**: After fixing environment variables, redeploy both frontend and backend
+- **Can't connect to backend**: Verify `NEXT_PUBLIC_BACKEND_URL` is set correctly in Vercel environment variables
+- **Encryption fails**: Ensure backend public key endpoint is accessible and returns valid key
+- **Network errors**: Check browser console for detailed error messages - the improved error handling will show specific issues
 
 ## Security Notes
 

@@ -35,6 +35,7 @@ export default function CheckoutPage() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [isLoadingKey, setIsLoadingKey] = useState(true);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
 
@@ -47,14 +48,38 @@ export default function CheckoutPage() {
   useEffect(() => {
     // Fetch the RSA public key when component mounts
     const loadPublicKey = async () => {
+      setIsLoadingKey(true);
+      setErrorMessage('');
+      setPaymentStatus('idle');
+      
       try {
+        console.log('Fetching public key from:', backendUrl);
         const key = await fetchPublicKey(backendUrl);
+        
+        if (!key) {
+          throw new Error('Public key is empty or invalid');
+        }
+        
         setPublicKey(key);
+        console.log('Public key loaded successfully');
       } catch (error) {
-        setErrorMessage(
-          error instanceof Error ? error.message : 'Failed to initialize secure checkout'
-        );
+        console.error('Failed to load public key:', error);
+        const errorMsg = error instanceof Error ? error.message : 'Failed to initialize secure checkout';
+        
+        // Provide more helpful error messages
+        let userMessage = errorMsg;
+        if (errorMsg.includes('fetch') || errorMsg.includes('network') || errorMsg.includes('Failed to fetch')) {
+          userMessage = `Cannot connect to backend server. Please check:\n1. Backend URL is correct: ${backendUrl}\n2. Backend is running and accessible\n3. CORS is configured correctly`;
+        } else if (errorMsg.includes('404')) {
+          userMessage = `Backend endpoint not found. Check if ${backendUrl}/api/crypto/key exists`;
+        } else if (errorMsg.includes('CORS')) {
+          userMessage = `CORS error: Backend may not allow requests from this origin`;
+        }
+        
+        setErrorMessage(userMessage);
         setPaymentStatus('error');
+      } finally {
+        setIsLoadingKey(false);
       }
     };
 
@@ -223,6 +248,13 @@ export default function CheckoutPage() {
             <div>
               <h2 className="font-serif text-2xl mb-6">Payment Details</h2>
 
+              {isLoadingKey && (
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded flex items-center gap-3 mb-6">
+                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                  <p className="text-blue-800 text-sm">Initializing secure connection...</p>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label className="block text-sm mb-2 text-black/70">Cardholder Name</label>
@@ -234,7 +266,7 @@ export default function CheckoutPage() {
                       errors.fullName ? 'border-red-500' : 'border-black/20'
                     } focus:border-gold focus:outline-none transition-colors`}
                     placeholder="John Smith"
-                    disabled={isProcessing}
+                    disabled={isProcessing || isLoadingKey || !publicKey}
                   />
                   {errors.fullName && (
                     <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
@@ -253,7 +285,7 @@ export default function CheckoutPage() {
                       } focus:border-gold focus:outline-none transition-colors`}
                       placeholder="1234 5678 9012 3456"
                       maxLength={19}
-                      disabled={isProcessing}
+                      disabled={isProcessing || isLoadingKey || !publicKey}
                     />
                     <CreditCard className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black/30" />
                   </div>
@@ -274,7 +306,7 @@ export default function CheckoutPage() {
                       } focus:border-gold focus:outline-none transition-colors`}
                       placeholder="MM/YY"
                       maxLength={5}
-                      disabled={isProcessing}
+                      disabled={isProcessing || isLoadingKey || !publicKey}
                     />
                     {errors.expiry && (
                       <p className="text-red-500 text-sm mt-1">{errors.expiry}</p>
@@ -292,7 +324,7 @@ export default function CheckoutPage() {
                       } focus:border-gold focus:outline-none transition-colors`}
                       placeholder="123"
                       maxLength={4}
-                      disabled={isProcessing}
+                      disabled={isProcessing || isLoadingKey || !publicKey}
                     />
                     {errors.cvv && (
                       <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
@@ -321,9 +353,16 @@ export default function CheckoutPage() {
                       className="bg-red-50 border border-red-200 p-4 rounded flex items-start gap-3"
                     >
                       <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                      <div className="text-sm">
+                      <div className="text-sm flex-1">
                         <p className="text-red-800 font-medium mb-1">Payment Failed</p>
-                        <p className="text-red-700">{errorMessage}</p>
+                        <div className="text-red-700 whitespace-pre-line">{errorMessage}</div>
+                        {errorMessage.includes(backendUrl) && (
+                          <div className="mt-2 pt-2 border-t border-red-200">
+                            <p className="text-xs text-red-600">
+                              Backend URL: <code className="bg-red-100 px-1 rounded">{backendUrl}</code>
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </motion.div>
                   )}
@@ -331,7 +370,7 @@ export default function CheckoutPage() {
 
                 <button
                   type="submit"
-                  disabled={isProcessing || paymentStatus === 'success'}
+                  disabled={isProcessing || paymentStatus === 'success' || isLoadingKey || !publicKey}
                   className="w-full bg-black text-white py-4 tracking-[0.15em] text-sm uppercase hover:bg-gold transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isProcessing ? (
