@@ -192,6 +192,12 @@ Once deployed, you can access transactions:
 - **Can't connect to backend**: Verify `NEXT_PUBLIC_BACKEND_URL` is set correctly in Vercel environment variables
 - **Encryption fails**: Ensure backend public key endpoint is accessible and returns valid key
 - **Network errors**: Check browser console for detailed error messages - the improved error handling will show specific issues
+- **"atob" / "Latin1 range" error**: This occurs when the public key contains invalid characters. Solutions:
+  1. **Check backend key format**: Ensure `PUBLIC_KEY` in Render environment variables is properly formatted
+  2. **If using base64 encoding**: Make sure the base64 string is valid and doesn't contain extra characters
+  3. **If using PEM directly**: Ensure the PEM key has proper line breaks and no invisible Unicode characters
+  4. **Regenerate keys**: If the issue persists, regenerate the RSA keys locally and re-encode them for environment variables
+  5. **Check backend logs**: Look for any encoding errors when the backend loads the keys
 
 ## Security Notes
 

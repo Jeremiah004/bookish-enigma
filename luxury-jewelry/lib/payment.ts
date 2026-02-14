@@ -101,7 +101,34 @@ export const fetchPublicKey = async (backendUrl: string): Promise<string> => {
       throw new Error('Invalid response: public key not found in response');
     }
     
-    return data.publicKey;
+    // Sanitize the public key: ensure it's a string and remove any potential encoding issues
+    let publicKey = String(data.publicKey).trim();
+    
+    // Normalize line endings (handle \r\n, \n, \r)
+    publicKey = publicKey.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    
+    // Remove any zero-width or invisible Unicode characters that might cause issues
+    // This includes zero-width spaces, non-breaking spaces, etc.
+    publicKey = publicKey.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '');
+    
+    // Ensure proper PEM format with newlines
+    // If the key doesn't have newlines but should (between header and content), add them
+    if (publicKey.includes('BEGIN PUBLIC KEY-----') && !publicKey.includes('BEGIN PUBLIC KEY-----\n')) {
+      publicKey = publicKey.replace('BEGIN PUBLIC KEY-----', 'BEGIN PUBLIC KEY-----\n');
+    }
+    if (publicKey.includes('-----END PUBLIC KEY') && !publicKey.includes('\n-----END PUBLIC KEY')) {
+      publicKey = publicKey.replace('-----END PUBLIC KEY', '\n-----END PUBLIC KEY');
+    }
+    
+    // Validate it looks like a PEM key
+    if (!publicKey.includes('BEGIN') || !publicKey.includes('END')) {
+      console.warn('Public key may not be in PEM format, but continuing...');
+    }
+    
+    // Log a sample for debugging (first 100 chars only)
+    console.log('Received public key (first 100 chars):', publicKey.substring(0, 100));
+    
+    return publicKey;
   } catch (error) {
     // Provide more specific error messages
     if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -118,20 +145,91 @@ export const fetchPublicKey = async (backendUrl: string): Promise<string> => {
 
 // Helper: convert a PEM-formatted SPKI public key into an ArrayBuffer (DER)
 const pemToArrayBuffer = (pem: string): ArrayBuffer => {
-  const b64 = pem
-    .replace(/-----BEGIN PUBLIC KEY-----/g, '')
-    .replace(/-----END PUBLIC KEY-----/g, '')
-    .replace(/\s+/g, '');
-
-  const binaryString = typeof window !== 'undefined' ? window.atob(b64) : Buffer.from(b64, 'base64').toString('binary');
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-
-  for (let i = 0; i < len; i += 1) {
-    bytes[i] = binaryString.charCodeAt(i);
+  if (!pem || typeof pem !== 'string') {
+    throw new Error('Invalid PEM string: must be a non-empty string');
   }
 
-  return bytes.buffer;
+  // Clean the PEM string more thoroughly
+  let b64 = pem
+    .replace(/-----BEGIN PUBLIC KEY-----/gi, '')
+    .replace(/-----END PUBLIC KEY-----/gi, '')
+    .replace(/-----BEGIN RSA PUBLIC KEY-----/gi, '')
+    .replace(/-----END RSA PUBLIC KEY-----/gi, '')
+    // Remove all whitespace (spaces, tabs, newlines, etc.)
+    .replace(/\s+/g, '')
+    // Remove any non-base64 characters (just in case)
+    .replace(/[^A-Za-z0-9+/=]/g, '');
+
+  // Validate base64 format
+  if (!b64 || b64.length === 0) {
+    throw new Error('Invalid PEM: no base64 content found after cleaning');
+  }
+
+  // Base64 validation: should only contain A-Z, a-z, 0-9, +, /, and = for padding
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(b64)) {
+    throw new Error('Invalid PEM: base64 string contains invalid characters');
+  }
+
+  try {
+    let binaryString: string;
+    
+    if (typeof window !== 'undefined') {
+      // Browser environment - use atob with error handling
+      // First, ensure the string is pure ASCII (atob requirement)
+      // Check for any non-ASCII characters
+      for (let i = 0; i < b64.length; i++) {
+        const charCode = b64.charCodeAt(i);
+        if (charCode > 127) {
+          throw new Error(
+            `Invalid character in base64 string at position ${i}: character code ${charCode}. ` +
+            `This usually indicates the PEM key was corrupted during transmission. ` +
+            `Please check the backend response.`
+          );
+        }
+      }
+      
+      try {
+        binaryString = window.atob(b64);
+      } catch (atobError) {
+        // If atob fails, try to fix common issues
+        // Sometimes the issue is with padding
+        let fixedB64 = b64.trim();
+        const paddingNeeded = (4 - (fixedB64.length % 4)) % 4;
+        const paddedB64 = fixedB64 + '='.repeat(paddingNeeded);
+        
+        try {
+          binaryString = window.atob(paddedB64);
+        } catch (retryError) {
+          // Last resort: try using a different approach
+          // Convert to bytes directly using TextEncoder (but this won't work for base64)
+          // Instead, provide a detailed error message
+          const errorMsg = atobError instanceof Error ? atobError.message : 'Unknown error';
+          throw new Error(
+            `Failed to decode base64 public key: ${errorMsg}. ` +
+            `This usually means the key format is invalid or corrupted. ` +
+            `PEM length: ${pem.length}, Base64 length: ${b64.length}, ` +
+            `First 50 chars of base64: ${b64.substring(0, 50)}`
+          );
+        }
+      }
+    } else {
+      // Node.js environment
+      binaryString = Buffer.from(b64, 'base64').toString('binary');
+    }
+
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+
+    for (let i = 0; i < len; i += 1) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    return bytes.buffer;
+  } catch (error) {
+    throw new Error(
+      `Failed to convert PEM to ArrayBuffer: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
 };
 
 /**
@@ -162,7 +260,18 @@ export const encryptPaymentData = async (
   const encoder = new TextEncoder();
   const data = encoder.encode(JSON.stringify(payload));
 
-  const keyData = pemToArrayBuffer(publicKeyPem);
+  // Convert PEM to ArrayBuffer with better error handling
+  let keyData: ArrayBuffer;
+  try {
+    keyData = pemToArrayBuffer(publicKeyPem);
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(
+      `Failed to process public key: ${errorMsg}. ` +
+      `This may indicate the key format is invalid or corrupted. ` +
+      `Please contact support or try refreshing the page.`
+    );
+  }
 
   const cryptoKey = await window.crypto.subtle.importKey(
     'spki',
