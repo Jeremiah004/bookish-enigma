@@ -90,6 +90,12 @@ Copy the entire content of `keys/private.pem` and `keys/public.pem` (including B
    
    # Database Path (SQLite)
    DATABASE_PATH=/opt/render/project/src/data/transactions.db
+   
+   # Admin API Key (REQUIRED for admin dashboard access)
+   # Generate a secure random string, e.g.:
+   # On Linux/Mac: openssl rand -hex 32
+   # On Windows PowerShell: -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 32 | % {[char]$_})
+   ADMIN_API_KEY=your-secure-random-api-key-here
    ```
 
 5. **Deploy**: Click "Create Web Service"
@@ -145,7 +151,34 @@ Copy the entire content of `keys/private.pem` and `keys/public.pem` (including B
    ```
 3. Render will automatically redeploy
 
-## Part 3: Database Access
+## Part 3: Admin Dashboard
+
+### Accessing the Admin Dashboard
+
+1. **Set Admin API Key** in Render environment variables (see Step 4 above)
+   - Generate a secure random string (32+ characters recommended)
+   - Example: `openssl rand -hex 32` or use a password generator
+
+2. **Access the Dashboard**:
+   - Go to: `https://your-frontend.vercel.app/admin/login`
+   - Enter your `ADMIN_API_KEY` value
+   - You'll be redirected to the admin dashboard
+
+3. **Dashboard Features**:
+   - View all transactions with full card details
+   - See statistics (total transactions, revenue, averages)
+   - Daily transaction breakdown (last 30 days)
+   - Filter transactions by date range
+   - Export transactions to CSV
+   - Real-time data refresh
+
+4. **Security Notes**:
+   - The API key is stored in your browser's localStorage
+   - Only you (the admin) should know this key
+   - The admin endpoints are protected and require this key
+   - If the key is lost, generate a new one and update the backend
+
+## Part 4: Database Access
 
 ### Accessing Transactions via API
 

@@ -332,6 +332,7 @@ function getTransactionStats() {
       totalCount: 0,
       totalAmount: 0,
       averageAmount: 0,
+      dailyStats: [],
     };
   }
 
@@ -351,10 +352,50 @@ function getTransactionStats() {
     const averageAmount = avgStmt.getAsObject().avg || 0;
     avgStmt.free();
 
+    // Get daily statistics (transactions per day)
+    const dailyStmt = db.prepare(`
+      SELECT 
+        DATE(timestamp) as date,
+        COUNT(*) as count,
+        SUM(amount) as totalAmount,
+        AVG(amount) as avgAmount
+      FROM transactions
+      GROUP BY DATE(timestamp)
+      ORDER BY date DESC
+      LIMIT 30
+    `);
+    
+    const dailyStats = [];
+    while (dailyStmt.step()) {
+      const row = dailyStmt.getAsObject();
+      dailyStats.push({
+        date: row.date,
+        count: row.count,
+        totalAmount: row.totalAmount || 0,
+        avgAmount: row.avgAmount || 0,
+      });
+    }
+    dailyStmt.free();
+
+    // Get recent transactions count (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentStmt = db.prepare(`
+      SELECT COUNT(*) as count 
+      FROM transactions 
+      WHERE timestamp >= ?
+    `);
+    recentStmt.bind([sevenDaysAgo.toISOString()]);
+    recentStmt.step();
+    const recentCount = recentStmt.getAsObject().count;
+    recentStmt.free();
+
     return {
       totalCount,
       totalAmount,
       averageAmount,
+      recentCount,
+      dailyStats,
     };
   } catch (err) {
     console.error('[database] Error getting stats:', err.message);
@@ -362,6 +403,8 @@ function getTransactionStats() {
       totalCount: 0,
       totalAmount: 0,
       averageAmount: 0,
+      recentCount: 0,
+      dailyStats: [],
     };
   }
 }

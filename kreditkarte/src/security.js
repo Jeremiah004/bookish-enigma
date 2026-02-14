@@ -63,10 +63,50 @@ function createSessionHeaderGuard() {
   };
 }
 
+/**
+ * Admin authentication middleware
+ * Protects admin endpoints with a simple API key/password
+ * Set ADMIN_API_KEY environment variable to enable
+ */
+function createAdminAuthGuard() {
+  const adminApiKey = process.env.ADMIN_API_KEY;
+  
+  if (!adminApiKey) {
+    console.warn('[security] ADMIN_API_KEY not set - admin endpoints are unprotected!');
+    // In production, you should require this
+    return (req, res, next) => {
+      console.warn('[security] Admin endpoint accessed without ADMIN_API_KEY configured');
+      next();
+    };
+  }
+
+  return (req, res, next) => {
+    // Check for API key in header or query parameter
+    const providedKey = req.header('x-admin-api-key') || req.query.apiKey;
+    
+    if (!providedKey) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'Admin access requires authentication. Provide x-admin-api-key header or apiKey query parameter.',
+      });
+    }
+
+    if (providedKey !== adminApiKey) {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Invalid admin credentials.',
+      });
+    }
+
+    next();
+  };
+}
+
 module.exports = {
   createCorsMiddleware,
   createPaymentRateLimiter,
   createSessionHeaderGuard,
+  createAdminAuthGuard,
 };
 
 

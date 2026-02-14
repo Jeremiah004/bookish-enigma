@@ -32,6 +32,7 @@ const {
   createCorsMiddleware,
   createPaymentRateLimiter,
   createSessionHeaderGuard,
+  createAdminAuthGuard,
 } = require('./security');
 
 const { isValidLuhn, isValidAmount } = require('./validation');
@@ -60,6 +61,9 @@ app.use(express.json({ limit: '10kb' })); // small limit because payloads are ti
 // Optional: lightweight session header guard for all API routes.
 // You can move this to individual routes if you only want it on some.
 const sessionGuard = createSessionHeaderGuard();
+
+// Admin authentication guard - protects admin endpoints
+const adminAuth = createAdminAuthGuard();
 
 // Simple health check / ping endpoint
 app.get('/health', (req, res) => {
@@ -255,8 +259,8 @@ app.post(
 );
 
 // GET /api/admin/stats - Get transaction statistics
-// WARNING: In production, this should be protected with authentication!
-app.get('/api/admin/stats', async (req, res) => {
+// Protected with admin authentication
+app.get('/api/admin/stats', adminAuth, async (req, res) => {
   try {
     await ensureInitialized();
     
@@ -276,7 +280,8 @@ app.get('/api/admin/stats', async (req, res) => {
 
 // GET /api/admin/transactions - Enhanced transaction list with all filters
 // Same as /api/transactions but with admin prefix for clarity
-app.get('/api/admin/transactions', async (req, res) => {
+// Protected with admin authentication
+app.get('/api/admin/transactions', adminAuth, async (req, res) => {
   try {
     await ensureInitialized();
     
