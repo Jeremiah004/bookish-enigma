@@ -155,19 +155,26 @@ const pemToArrayBuffer = (pem: string): ArrayBuffer => {
     .replace(/-----END PUBLIC KEY-----/gi, '')
     .replace(/-----BEGIN RSA PUBLIC KEY-----/gi, '')
     .replace(/-----END RSA PUBLIC KEY-----/gi, '')
-    // Remove all whitespace (spaces, tabs, newlines, etc.)
+    // Remove all whitespace (spaces, tabs, newlines, carriage returns, etc.)
     .replace(/\s+/g, '')
-    // Remove any non-base64 characters (just in case)
+    // Remove any non-base64 characters (just in case) - be more permissive
     .replace(/[^A-Za-z0-9+/=]/g, '');
 
-  // Validate base64 format
+  // Validate base64 format - check if we have content
   if (!b64 || b64.length === 0) {
-    throw new Error('Invalid PEM: no base64 content found after cleaning');
+    throw new Error('Invalid PEM: no base64 content found after cleaning. The key may be empty or malformed.');
   }
 
-  // Base64 validation: should only contain A-Z, a-z, 0-9, +, /, and = for padding
-  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(b64)) {
-    throw new Error('Invalid PEM: base64 string contains invalid characters');
+  // Basic sanity check: RSA-2048 public key should be at least ~300 characters when base64 encoded
+  // (actual minimum is around 294, but we'll be lenient)
+  if (b64.length < 200) {
+    console.warn(`Base64 key seems unusually short (${b64.length} chars). Expected ~300+ for RSA-2048.`);
+  }
+
+  // Ensure proper padding (base64 length must be multiple of 4)
+  const paddingNeeded = (4 - (b64.length % 4)) % 4;
+  if (paddingNeeded > 0) {
+    b64 = b64 + '='.repeat(paddingNeeded);
   }
 
   try {
@@ -191,26 +198,21 @@ const pemToArrayBuffer = (pem: string): ArrayBuffer => {
       try {
         binaryString = window.atob(b64);
       } catch (atobError) {
-        // If atob fails, try to fix common issues
-        // Sometimes the issue is with padding
-        let fixedB64 = b64.trim();
-        const paddingNeeded = (4 - (fixedB64.length % 4)) % 4;
-        const paddedB64 = fixedB64 + '='.repeat(paddingNeeded);
+        // If atob fails, provide detailed error information
+        const errorMsg = atobError instanceof Error ? atobError.message : 'Unknown error';
         
-        try {
-          binaryString = window.atob(paddedB64);
-        } catch (retryError) {
-          // Last resort: try using a different approach
-          // Convert to bytes directly using TextEncoder (but this won't work for base64)
-          // Instead, provide a detailed error message
-          const errorMsg = atobError instanceof Error ? atobError.message : 'Unknown error';
-          throw new Error(
-            `Failed to decode base64 public key: ${errorMsg}. ` +
-            `This usually means the key format is invalid or corrupted. ` +
-            `PEM length: ${pem.length}, Base64 length: ${b64.length}, ` +
-            `First 50 chars of base64: ${b64.substring(0, 50)}`
-          );
-        }
+        // Log debugging information
+        console.error('atob failed with:', errorMsg);
+        console.error('Base64 string length:', b64.length);
+        console.error('Base64 string (first 100 chars):', b64.substring(0, 100));
+        console.error('PEM string length:', pem.length);
+        console.error('PEM string (first 200 chars):', pem.substring(0, 200));
+        
+        throw new Error(
+          `Failed to decode base64 public key: ${errorMsg}. ` +
+          `The key may be corrupted or in an unsupported format. ` +
+          `Please check the backend configuration and ensure the PUBLIC_KEY environment variable is correctly set.`
+        );
       }
     } else {
       // Node.js environment
