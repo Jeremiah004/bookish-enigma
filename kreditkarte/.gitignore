@@ -11,7 +11,7 @@ keys/
 
 # Transaction data (sensitive)
 data/
-*.json
+*transactions.json
 *.db
 *.db-shm
 *.db-wal

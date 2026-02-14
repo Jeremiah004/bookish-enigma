@@ -51,15 +51,17 @@ Copy the entire content of `keys/private.pem` and `keys/public.pem` (including B
 2. **Create new Web Service on Render**:
    - Go to [Render Dashboard](https://dashboard.render.com)
    - Click "New +" → "Web Service"
-   - Connect your GitHub repository
-   - Select the `kreditkarte` directory (or root if monorepo)
+   - Connect your GitHub repository (`bookish-enigma` or your repo name)
 
 3. **Configure Service**:
    - **Name**: `secure-vault-backend` (or your preferred name)
    - **Environment**: `Node`
+   - **Root Directory**: `kreditkarte` ⚠️ **IMPORTANT: Set this to `kreditkarte`**
    - **Build Command**: `npm install`
    - **Start Command**: `npm start`
    - **Plan**: Free tier is fine for testing
+   
+   **Critical**: In the Render dashboard, under "Settings" → "Build & Deploy", make sure **Root Directory** is set to `kreditkarte`. This tells Render where to find the `package.json` file.
 
 4. **Set Environment Variables** in Render dashboard:
 
