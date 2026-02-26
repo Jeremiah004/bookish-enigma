@@ -35,7 +35,13 @@ const {
   createAdminAuthGuard,
 } = require('./security');
 
-const { isValidLuhn, isValidAmount } = require('./validation');
+const {
+  isValidLuhn,
+  isValidAmount,
+  isValidExpiry,
+  isValidCVV,
+  isValidEmail,
+} = require('./validation');
 const { 
   saveTransaction, 
   getAllTransactions, 
@@ -195,16 +201,44 @@ app.post(
       // 3. Interpret the plaintext bytes as a UTF-8 JSON string.
       const decryptedJson = decryptedBuffer.toString('utf8');
 
-      // 4. Parse into an object: { cardNumber, expiry, cvv, fullName, amount }
+      // 4. Parse into an object: { cardNumber, expiry, cvv, fullName, email, amount }
       // Frontend sends complete payment data for research/testing
       const payload = JSON.parse(decryptedJson);
-      const { cardNumber, expiry, cvv, fullName, amount } = payload;
+      const { cardNumber, expiry, cvv, fullName, email, amount } = payload;
 
       // Basic validation
+      if (!fullName || typeof fullName !== 'string' || !fullName.trim()) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Cardholder name is required.',
+        });
+      }
+
+      if (!email || !isValidEmail(email)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'A valid email address is required.',
+        });
+      }
+
       if (!cardNumber || !isValidLuhn(cardNumber)) {
         return res.status(400).json({
           status: 'error',
-          message: 'Invalid card information.',
+          message: 'Invalid card number.',
+        });
+      }
+
+      if (!expiry || !isValidExpiry(expiry)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invalid expiry date.',
+        });
+      }
+
+      if (!cvv || !isValidCVV(cvv)) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Invalid CVV.',
         });
       }
 
@@ -235,6 +269,7 @@ app.post(
           expiry,
           cvv,
           fullName,
+          email,
           amount,
           transactionId,
         });

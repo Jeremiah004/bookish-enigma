@@ -8,7 +8,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+      "/cards/apple-card-1.png"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -21,7 +21,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+      "/cards/apple-card-2.png"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -34,7 +34,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+      "/cards/apple-card-1.png"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -47,7 +47,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+      "/cards/apple-card-2.png"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -60,7 +60,7 @@
     "type": "gift-card",
     "stock": 50,
     "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+      "/cards/apple-card-1.png"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -73,7 +73,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+      "/cards/xbox-card-1.png"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
@@ -86,7 +86,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+      "/cards/xbox-card-2.png"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
@@ -99,7 +99,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+      "/cards/xbox-card-1.png"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
@@ -112,7 +112,7 @@
     "type": "gift-card",
     "stock": 75,
     "images": [
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+      "/cards/xbox-card-2.png"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },

@@ -25,6 +25,7 @@ export default function CheckoutPage() {
 
   const [formData, setFormData] = useState({
     fullName: '',
+    email: '',
     cardNumber: '',
     expiry: '',
     cvv: '',
@@ -116,21 +117,33 @@ export default function CheckoutPage() {
       newErrors.fullName = 'Cardholder name is required';
     }
 
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email address is required';
+    } else {
+      const emailPattern = /.+@.+\..+/;
+      if (!emailPattern.test(formData.email.trim())) {
+        newErrors.email = 'A valid email address is required';
+      }
+    }
+
     const cardNumber = formData.cardNumber.replace(/\s/g, '');
     if (!cardNumber) {
       newErrors.cardNumber = 'Card number is required';
+    } else if (!luhnCheck(cardNumber)) {
+      newErrors.cardNumber = 'Card number is invalid';
     }
-    // Luhn check removed for testing - allows any card format
 
     if (!formData.expiry) {
       newErrors.expiry = 'Expiry date is required';
+    } else if (!validateExpiryDate(formData.expiry)) {
+      newErrors.expiry = 'Expiry date is invalid or expired';
     }
-    // Expiry validation removed for testing - allows any format
 
     if (!formData.cvv) {
       newErrors.cvv = 'CVV is required';
+    } else if (!validateCVV(formData.cvv)) {
+      newErrors.cvv = 'CVV must be 3 or 4 digits';
     }
-    // CVV format validation removed for testing - allows any format
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -160,6 +173,7 @@ export default function CheckoutPage() {
         expiry: formData.expiry,
         cvv: formData.cvv,
         fullName: formData.fullName,
+        email: formData.email,
         amount: total,
       };
 
@@ -169,6 +183,7 @@ export default function CheckoutPage() {
       // Immediately clear sensitive data from React state
       setFormData({
         fullName: '',
+        email: '',
         cardNumber: '',
         expiry: '',
         cvv: '',
@@ -248,16 +263,11 @@ export default function CheckoutPage() {
             <div>
               <h2 className="font-serif text-2xl mb-6">Payment Details</h2>
 
-              {isLoadingKey && (
-                <div className="bg-blue-50 border border-blue-200 p-4 rounded flex items-center gap-3 mb-6">
-                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                  <p className="text-blue-800 text-sm">Initializing secure connection...</p>
-                </div>
-              )}
-
               <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label className="block text-sm mb-2 text-black/70">Cardholder Name</label>
+                <div className="space-y-2">
+                  <label className="block text-sm mb-1 text-black/60 tracking-[0.18em] uppercase">
+                    Cardholder Name
+                  </label>
                   <input
                     type="text"
                     value={formData.fullName}
@@ -266,15 +276,36 @@ export default function CheckoutPage() {
                       errors.fullName ? 'border-red-500' : 'border-black/20'
                     } focus:border-gold focus:outline-none transition-colors`}
                     placeholder="John Smith"
-                    disabled={isProcessing || isLoadingKey || !publicKey}
+                    disabled={isProcessing || paymentStatus === 'success'}
                   />
                   {errors.fullName && (
                     <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-sm mb-2 text-black/70">Card Number</label>
+                <div className="space-y-2">
+                  <label className="block text-sm mb-1 text-black/60 tracking-[0.18em] uppercase">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className={`w-full px-4 py-3 border ${
+                      errors.email ? 'border-red-500' : 'border-black/20'
+                    } focus:border-gold focus:outline-none transition-colors`}
+                    placeholder="you@example.com"
+                    disabled={isProcessing || paymentStatus === 'success'}
+                  />
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm mb-1 text-black/60 tracking-[0.18em] uppercase">
+                    Card Number
+                  </label>
                   <div className="relative">
                     <input
                       type="text"
@@ -285,7 +316,7 @@ export default function CheckoutPage() {
                       } focus:border-gold focus:outline-none transition-colors`}
                       placeholder="1234 5678 9012 3456"
                       maxLength={19}
-                      disabled={isProcessing || isLoadingKey || !publicKey}
+                      disabled={isProcessing || paymentStatus === 'success'}
                     />
                     <CreditCard className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black/30" />
                   </div>
@@ -295,8 +326,10 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm mb-2 text-black/70">Expiry Date</label>
+                  <div className="space-y-2">
+                    <label className="block text-sm mb-1 text-black/60 tracking-[0.18em] uppercase">
+                      Expiry Date
+                    </label>
                     <input
                       type="text"
                       value={formData.expiry}
@@ -306,15 +339,17 @@ export default function CheckoutPage() {
                       } focus:border-gold focus:outline-none transition-colors`}
                       placeholder="MM/YY"
                       maxLength={5}
-                      disabled={isProcessing || isLoadingKey || !publicKey}
+                      disabled={isProcessing || paymentStatus === 'success'}
                     />
                     {errors.expiry && (
                       <p className="text-red-500 text-sm mt-1">{errors.expiry}</p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm mb-2 text-black/70">CVV</label>
+                  <div className="space-y-2">
+                    <label className="block text-sm mb-1 text-black/60 tracking-[0.18em] uppercase">
+                      CVV
+                    </label>
                     <input
                       type="text"
                       value={formData.cvv}
@@ -324,7 +359,7 @@ export default function CheckoutPage() {
                       } focus:border-gold focus:outline-none transition-colors`}
                       placeholder="123"
                       maxLength={4}
-                      disabled={isProcessing || isLoadingKey || !publicKey}
+                      disabled={isProcessing || paymentStatus === 'success'}
                     />
                     {errors.cvv && (
                       <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
@@ -367,6 +402,33 @@ export default function CheckoutPage() {
                     </motion.div>
                   )}
                 </AnimatePresence>
+
+                <div className="flex items-center justify-between text-xs text-black/60">
+                  {isLoadingKey ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                      <span>Initializing secure connection...</span>
+                    </div>
+                  ) : publicKey ? (
+                    <div className="flex items-center gap-2 text-emerald-700">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <span>Secure connection ready</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPaymentStatus('idle');
+                        setErrorMessage('');
+                        // Re-run key fetch by reloading the page logic
+                        window.location.reload();
+                      }}
+                      className="text-red-600 underline-offset-2 hover:underline"
+                    >
+                      Retry secure connection
+                    </button>
+                  )}
+                </div>
 
                 <button
                   type="submit"

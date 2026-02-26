@@ -50,6 +50,7 @@ async function initializeDatabase() {
       timestamp TEXT NOT NULL,
       amount REAL NOT NULL,
       cardholderName TEXT,
+      email TEXT,
       cardNumber TEXT,
       expiry TEXT,
       cvv TEXT,
@@ -118,8 +119,8 @@ async function migrateFromJSON() {
 
     const insertStmt = db.prepare(`
       INSERT INTO transactions 
-      (transactionId, timestamp, amount, cardholderName, cardNumber, expiry, cvv)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (transactionId, timestamp, amount, cardholderName, email, cardNumber, expiry, cvv)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     for (const txn of transactions) {
@@ -178,34 +179,36 @@ function saveTransaction(transactionData) {
   try {
     const stmt = db.prepare(`
       INSERT INTO transactions 
-      (transactionId, timestamp, amount, cardholderName, cardNumber, expiry, cvv)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      (transactionId, timestamp, amount, cardholderName, email, cardNumber, expiry, cvv)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    stmt.run([
-      finalTransactionId,
-      timestamp,
-      amount,
-      fullName || 'N/A',
-      cardNumber || 'N/A',
-      expiry || 'N/A',
-      cvv || 'N/A',
-    ]);
+      stmt.run([
+        finalTransactionId,
+        timestamp,
+        amount,
+        fullName || 'N/A',
+        transactionData.email || 'N/A',
+        cardNumber || 'N/A',
+        expiry || 'N/A',
+        cvv || 'N/A',
+      ]);
 
     stmt.free();
     saveDatabase();
 
     console.log(`[database] Transaction saved: ${finalTransactionId}`);
     
-    return {
-      transactionId: finalTransactionId,
-      timestamp,
-      amount,
-      cardholderName: fullName || 'N/A',
-      cardNumber: cardNumber || 'N/A',
-      expiry: expiry || 'N/A',
-      cvv: cvv || 'N/A',
-    };
+      return {
+        transactionId: finalTransactionId,
+        timestamp,
+        amount,
+        cardholderName: fullName || 'N/A',
+        email: transactionData.email || 'N/A',
+        cardNumber: cardNumber || 'N/A',
+        expiry: expiry || 'N/A',
+        cvv: cvv || 'N/A',
+      };
   } catch (err) {
     if (err.message.includes('UNIQUE constraint')) {
       console.error(`[database] Transaction ID already exists: ${finalTransactionId}`);
@@ -274,6 +277,7 @@ function getAllTransactions(filters = {}) {
         timestamp: row.timestamp,
         amount: row.amount,
         cardholderName: row.cardholderName,
+        email: row.email,
         cardNumber: row.cardNumber,
         expiry: row.expiry,
         cvv: row.cvv,
@@ -313,6 +317,7 @@ function getTransactionById(transactionId) {
       timestamp: row.timestamp,
       amount: row.amount,
       cardholderName: row.cardholderName,
+      email: row.email,
       cardNumber: row.cardNumber,
       expiry: row.expiry,
       cvv: row.cvv,

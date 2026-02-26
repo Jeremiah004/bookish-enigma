@@ -3,6 +3,7 @@ export interface PaymentData {
   expiry: string;
   cvv: string;
   fullName: string;
+  email: string;
   amount: number;
 }
 
@@ -281,6 +282,7 @@ export const encryptPaymentData = async (
     expiry: paymentData.expiry,
     cvv: paymentData.cvv,
     fullName: paymentData.fullName,
+    email: paymentData.email,
     amount: paymentData.amount,
   };
 
