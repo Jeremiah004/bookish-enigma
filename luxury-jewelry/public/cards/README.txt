@@ -1,12 +1,8 @@
-Place generated card artwork files in this directory when deploying:
+Card images used by the store:
 
-- apple-card-1.png
-- apple-card-2.png
-- xbox-card-1.png
-- xbox-card-2.png
+- apple-card.png  (Apple gift card image; used for all Apple products in products.json)
+- xbox-card.png   (Xbox gift card image; used for all Xbox products in products.json)
 
-In this Cursor workspace, these images are available under the assets paths
-created by the AI assistant; when running the app outside of Cursor, copy the
-corresponding PNG files into this folder so that the product image URLs in
-`lib/products.json` resolve correctly.
+These files are served from /cards/ and referenced in lib/products.json.
+PlayStation products still use remote image URLs.
 

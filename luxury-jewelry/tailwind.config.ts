@@ -15,14 +15,28 @@ const config: Config = {
           200: '#EEEEEE',
         },
         gold: {
-          DEFAULT: '#D4AF37',
-          light: '#E8D4A0',
-          dark: '#B8941F',
+          DEFAULT: '#C9A227',
+          light: '#E5D4A0',
+          dark: '#A68521',
+        },
+        primary: {
+          DEFAULT: '#1a2332',
+          light: '#243447',
+          dark: '#0f1623',
+        },
+        surface: {
+          DEFAULT: '#ffffff',
+          subtle: '#f8f9fb',
         },
       },
       fontFamily: {
         serif: ['Playfair Display', 'serif'],
         sans: ['Inter', 'sans-serif'],
+      },
+      boxShadow: {
+        card: '0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04)',
+        'card-hover': '0 10px 25px -5px rgb(0 0 0 / 0.08), 0 4px 10px -6px rgb(0 0 0 / 0.04)',
+        nav: '0 1px 0 0 rgb(0 0 0 / 0.05)',
       },
       animation: {
         'fade-in': 'fadeIn 0.6s ease-out',

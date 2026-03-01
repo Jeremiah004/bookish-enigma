@@ -19,9 +19,13 @@ export default function ProductCard({ product, index }: ProductCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="group"
     >
-      <Link href={`/product/${product.sku}`} className="group block">
-        <div className="relative aspect-square mb-6 overflow-hidden bg-pearl-100">
+      <Link
+        href={`/product/${product.sku}`}
+        className="block bg-surface rounded-xl border border-primary/8 shadow-card hover:shadow-card-hover transition-all duration-300 overflow-hidden hover:-translate-y-1"
+      >
+        <div className="relative aspect-square overflow-hidden bg-pearl-100">
           <Image
             src={product.images[currentImageIndex]}
             alt={product.name}
@@ -29,7 +33,6 @@ export default function ProductCard({ product, index }: ProductCardProps) {
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
-          
           {product.images.length > 1 && (
             <div
               className="absolute inset-0"
@@ -37,27 +40,26 @@ export default function ProductCard({ product, index }: ProductCardProps) {
               onMouseLeave={() => setCurrentImageIndex(0)}
             />
           )}
-
           {product.stock < 10 && (
-            <div className="absolute top-4 right-4 px-3 py-1 bg-black text-white text-xs tracking-widest">
+            <div className="absolute top-3 right-3 px-2.5 py-1 bg-primary text-white text-[10px] font-medium tracking-widest rounded">
               LIMITED
             </div>
           )}
         </div>
 
-        <div className="space-y-2">
-          <p className="text-xs tracking-[0.2em] uppercase text-black/50">
+        <div className="p-5 space-y-2">
+          <p className="text-xs tracking-[0.2em] uppercase text-primary/60 font-medium">
             {product.brand}
           </p>
-          <h3 className="font-serif text-xl text-black group-hover:text-gold transition-colors duration-300">
+          <h3 className="font-serif text-xl text-primary group-hover:text-gold transition-colors duration-300">
             {product.name}
           </h3>
-          <div className="flex items-center justify-between">
-            <p className="text-lg font-light">
+          <div className="flex items-center justify-between pt-1">
+            <p className="text-lg font-semibold text-primary">
               {product.denomination || `$${product.price.toLocaleString()}`}
             </p>
             {product.stock < 10 && (
-              <span className="text-xs tracking-wider text-gold border border-gold/30 px-2 py-1">
+              <span className="text-xs tracking-wider text-gold border border-gold/40 px-2 py-0.5 rounded">
                 Limited Stock
               </span>
             )}

@@ -19,6 +19,8 @@ export interface CartItem extends Product {
 interface CartStore {
   items: CartItem[];
   isOpen: boolean;
+  publicKey: string | null;
+  setPublicKey: (key: string | null) => void;
   addItem: (product: Product) => void;
   removeItem: (sku: string) => void;
   updateQuantity: (sku: string, quantity: number) => void;
@@ -33,6 +35,8 @@ interface CartStore {
 export const useCartStore = create<CartStore>((set, get) => ({
   items: [],
   isOpen: false,
+  publicKey: null,
+  setPublicKey: (key) => set({ publicKey: key }),
 
   addItem: (product) => {
     const items = get().items;

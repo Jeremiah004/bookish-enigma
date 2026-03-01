@@ -7,9 +7,7 @@
     "denomination": "$1",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/apple-card.png"],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
   {
@@ -20,9 +18,7 @@
     "denomination": "$10",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/apple-card.png"],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
   {
@@ -33,9 +29,7 @@
     "denomination": "$25",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/apple-card.png"],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
   {
@@ -46,9 +40,7 @@
     "denomination": "$50",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/apple-card.png"],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
   {
@@ -59,9 +51,7 @@
     "denomination": "$100",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/apple-card.png"],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
   {
@@ -72,9 +62,7 @@
     "denomination": "$200",
     "type": "gift-card",
     "stock": 50,
-    "images": [
-      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/apple-card.png"],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
   {
@@ -85,9 +73,7 @@
     "denomination": "$1",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/xbox-card.png"],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
   {
@@ -98,9 +84,7 @@
     "denomination": "$10",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/xbox-card.png"],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
   {
@@ -111,9 +95,7 @@
     "denomination": "$25",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/xbox-card.png"],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
   {
@@ -124,9 +106,7 @@
     "denomination": "$50",
     "type": "gift-card",
     "stock": 100,
-    "images": [
-      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/xbox-card.png"],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
   {
@@ -137,9 +117,7 @@
     "denomination": "$100",
     "type": "gift-card",
     "stock": 75,
-    "images": [
-      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=800&fit=crop"
-    ],
+    "images": ["/cards/xbox-card.png"],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
   {

@@ -4,22 +4,20 @@ import { Product } from '@/lib/store';
 
 export default function Home() {
   return (
-    <main className="min-h-screen pt-32 pb-20">
+    <main className="min-h-screen pt-28 pb-24">
       <div className="max-w-7xl mx-auto px-6">
-        {/* Hero Section */}
-        <section className="mb-20 text-center">
-          <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl mb-6 tracking-tight">
+        <section className="mb-16 md:mb-24 text-center">
+          <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl mb-5 tracking-tight text-primary">
             Digital Gift Cards
           </h1>
-          <p className="text-lg text-black/60 max-w-2xl mx-auto font-light leading-relaxed">
+          <p className="text-lg text-primary/70 max-w-2xl mx-auto font-light leading-relaxed">
             Instant delivery of premium gift cards for Apple, Xbox, PlayStation, and more.
             Secure checkout with RSA-2048 encryption for your peace of mind.
           </p>
         </section>
 
-        {/* Product Grid */}
         <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
             {products.map((product, index) => (
               <ProductCard
                 key={product.sku}
@@ -30,9 +28,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Bottom Spacer */}
-        <div className="mt-32 text-center">
-          <p className="text-sm text-black/40 tracking-[0.2em] uppercase">
+        <div className="mt-24 text-center">
+          <p className="text-sm text-primary/50 tracking-[0.2em] uppercase">
             Gift Card Store © 2026
           </p>
         </div>

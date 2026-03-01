@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navigation from '@/components/Navigation';
 import Cart from '@/components/Cart';
+import PrefetchPublicKey from '@/components/PrefetchPublicKey';
 
 export const metadata: Metadata = {
   title: 'Gift Card Store - Digital Gift Cards',
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <Navigation />
         <Cart />
+        <PrefetchPublicKey />
         {children}
       </body>
     </html>

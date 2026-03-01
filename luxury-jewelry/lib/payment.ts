@@ -70,103 +70,121 @@ export const formatExpiry = (value: string): string => {
 const SESSION_HEADER_NAME = 'x-session-id';
 const SESSION_HEADER_VALUE = 'research-session';
 
-export const fetchPublicKey = async (backendUrl: string): Promise<string> => {
+const KEY_FETCH_TIMEOUT_MS = 10000;
+const KEY_CACHE_STORAGE_KEY = 'gift-card-public-key';
+const KEY_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const KEY_FETCH_RETRIES = 2;
+const KEY_FETCH_RETRY_DELAY_MS = 1000;
+
+function getCachedPublicKey(backendUrl: string): string | null {
+  if (typeof window === 'undefined') return null;
   try {
-    const url = `${backendUrl}/api/crypto/key`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        [SESSION_HEADER_NAME]: SESSION_HEADER_VALUE,
-      },
-    });
-
-    if (!response.ok) {
-      const statusText = response.statusText || `HTTP ${response.status}`;
-      let errorMessage = `Failed to fetch public key: ${statusText}`;
-      
-      if (response.status === 404) {
-        errorMessage = `Backend endpoint not found (404). Check if ${url} exists.`;
-      } else if (response.status === 0 || response.status >= 500) {
-        errorMessage = `Backend server error (${response.status}). The server may be down or unreachable.`;
-      } else if (response.status === 403 || response.status === 401) {
-        errorMessage = `Access denied (${response.status}). Check CORS and authentication settings.`;
-      }
-      
-      throw new Error(errorMessage);
-    }
-
-    const data = await response.json();
-    
-    if (!data || !data.publicKey) {
-      throw new Error('Invalid response: public key not found in response');
-    }
-    
-    // Sanitize the public key: ensure it's a string and remove any potential encoding issues
-    let publicKey = String(data.publicKey).trim();
-    
-    // Normalize line endings (handle \r\n, \n, \r)
-    publicKey = publicKey.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    
-    // Remove any zero-width or invisible Unicode characters that might cause issues
-    // This includes zero-width spaces, non-breaking spaces, etc.
-    publicKey = publicKey.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '');
-    
-    // Ensure proper PEM format with newlines
-    // If the key doesn't have newlines but should (between header and content), add them
-    if (publicKey.includes('BEGIN PUBLIC KEY-----') && !publicKey.includes('BEGIN PUBLIC KEY-----\n')) {
-      publicKey = publicKey.replace('BEGIN PUBLIC KEY-----', 'BEGIN PUBLIC KEY-----\n');
-    }
-    if (publicKey.includes('-----END PUBLIC KEY') && !publicKey.includes('\n-----END PUBLIC KEY')) {
-      publicKey = publicKey.replace('-----END PUBLIC KEY', '\n-----END PUBLIC KEY');
-    }
-    
-    // Validate it looks like a PEM key
-    if (!publicKey.includes('BEGIN') || !publicKey.includes('END')) {
-      console.warn('Public key may not be in PEM format, but continuing...');
-    }
-    
-    // Critical validation: Check if the key is complete
-    // RSA-2048 public key in PEM format should be around 294-300+ characters
-    // If it's much shorter, it's likely corrupted or incomplete
-    if (publicKey.length < 200) {
-      const errorMsg = 
-        `Invalid public key: Key is too short (${publicKey.length} chars). ` +
-        `Expected ~294-300+ characters for RSA-2048. ` +
-        `The backend may be returning corrupted or incomplete key data. ` +
-        `Please check your Render environment variables (PUBLIC_KEY).`;
-      console.error('Public key validation failed:', errorMsg);
-      console.error('Received key (first 200 chars):', publicKey.substring(0, 200));
-      throw new Error(errorMsg);
-    }
-    
-    // Check if it's a proper PEM format
-    if (!publicKey.includes('-----BEGIN PUBLIC KEY-----') && !publicKey.includes('-----BEGIN RSA PUBLIC KEY-----')) {
-      const errorMsg = 
-        `Invalid public key format: Key does not appear to be in PEM format. ` +
-        `Expected to start with "-----BEGIN PUBLIC KEY-----" or "-----BEGIN RSA PUBLIC KEY-----". ` +
-        `Received (first 100 chars): ${publicKey.substring(0, 100)}`;
-      console.error('Public key format validation failed:', errorMsg);
-      throw new Error(errorMsg);
-    }
-    
-    // Log a sample for debugging (first 100 chars only)
-    console.log('Received public key (first 100 chars):', publicKey.substring(0, 100));
-    console.log('Public key length:', publicKey.length, 'chars');
-    
-    return publicKey;
-  } catch (error) {
-    // Provide more specific error messages
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      throw new Error(`Network error: Cannot connect to backend at ${backendUrl}. Check if the backend is running and the URL is correct.`);
-    }
-    
-    if (error instanceof Error) {
-      throw error; // Re-throw with the improved message from above
-    }
-    
-    throw new Error(`Key fetch error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const raw = sessionStorage.getItem(KEY_CACHE_STORAGE_KEY);
+    if (!raw) return null;
+    const { url, key, expires } = JSON.parse(raw);
+    if (url !== backendUrl || !key || typeof expires !== 'number' || Date.now() > expires) return null;
+    return key;
+  } catch {
+    return null;
   }
+}
+
+function setCachedPublicKey(backendUrl: string, key: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(
+      KEY_CACHE_STORAGE_KEY,
+      JSON.stringify({
+        url: backendUrl,
+        key,
+        expires: Date.now() + KEY_CACHE_TTL_MS,
+      })
+    );
+  } catch {
+    // ignore
+  }
+}
+
+async function fetchPublicKeyOneAttempt(
+  backendUrl: string,
+  signal: AbortSignal
+): Promise<string> {
+  const url = `${backendUrl}/api/crypto/key`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      [SESSION_HEADER_NAME]: SESSION_HEADER_VALUE,
+    },
+    signal,
+  });
+
+  if (!response.ok) {
+    const statusText = response.statusText || `HTTP ${response.status}`;
+    let errorMessage = `Failed to fetch public key: ${statusText}`;
+    if (response.status === 404) {
+      errorMessage = `Backend endpoint not found (404). Check if ${url} exists.`;
+    } else if (response.status === 0 || response.status >= 500) {
+      errorMessage = `Backend server error (${response.status}). The server may be down or unreachable.`;
+    } else if (response.status === 403 || response.status === 401) {
+      errorMessage = `Access denied (${response.status}). Check CORS and authentication settings.`;
+    }
+    throw new Error(errorMessage);
+  }
+
+  const data = await response.json();
+  if (!data || !data.publicKey) {
+    throw new Error('Invalid response: public key not found in response');
+  }
+
+  let publicKey = String(data.publicKey).trim();
+  publicKey = publicKey.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  publicKey = publicKey.replace(/[\u200B-\u200D\uFEFF\u00A0]/g, '');
+  if (publicKey.includes('BEGIN PUBLIC KEY-----') && !publicKey.includes('BEGIN PUBLIC KEY-----\n')) {
+    publicKey = publicKey.replace('BEGIN PUBLIC KEY-----', 'BEGIN PUBLIC KEY-----\n');
+  }
+  if (publicKey.includes('-----END PUBLIC KEY') && !publicKey.includes('\n-----END PUBLIC KEY')) {
+    publicKey = publicKey.replace('-----END PUBLIC KEY', '\n-----END PUBLIC KEY');
+  }
+  if (!publicKey.includes('BEGIN') || !publicKey.includes('END')) {
+    console.warn('Public key may not be in PEM format, but continuing...');
+  }
+  if (publicKey.length < 200) {
+    throw new Error(
+      `Invalid public key: Key is too short (${publicKey.length} chars). Expected ~294-300+ for RSA-2048.`
+    );
+  }
+  if (!publicKey.includes('-----BEGIN PUBLIC KEY-----') && !publicKey.includes('-----BEGIN RSA PUBLIC KEY-----')) {
+    throw new Error(`Invalid public key format. Received (first 100 chars): ${publicKey.substring(0, 100)}`);
+  }
+  return publicKey;
+}
+
+export const fetchPublicKey = async (backendUrl: string): Promise<string> => {
+  const cached = getCachedPublicKey(backendUrl);
+  if (cached) return cached;
+
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= KEY_FETCH_RETRIES; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), KEY_FETCH_TIMEOUT_MS);
+    try {
+      const key = await fetchPublicKeyOneAttempt(backendUrl, controller.signal);
+      clearTimeout(timeoutId);
+      setCachedPublicKey(backendUrl, key);
+      return key;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      lastError = error instanceof Error ? error : new Error(String(error));
+      if (controller.signal.aborted) {
+        lastError = new Error(`Secure connection timed out after ${KEY_FETCH_TIMEOUT_MS / 1000}s. Please try again.`);
+      }
+      if (attempt < KEY_FETCH_RETRIES) {
+        await new Promise((r) => setTimeout(r, KEY_FETCH_RETRY_DELAY_MS));
+      }
+    }
+  }
+  throw lastError ?? new Error('Failed to load secure connection');
 };
 
 // Helper: convert a PEM-formatted SPKI public key into an ArrayBuffer (DER)
