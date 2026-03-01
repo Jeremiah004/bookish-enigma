@@ -1,5 +1,18 @@
 [
   {
+    "sku": "APPLE-1",
+    "brand": "Apple",
+    "name": "Apple Gift Card - $1",
+    "price": 1,
+    "denomination": "$1",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
+  },
+  {
     "sku": "APPLE-10",
     "brand": "Apple",
     "name": "Apple Gift Card - $10",
@@ -8,7 +21,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "/cards/apple-card-1.png"
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -21,7 +34,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "/cards/apple-card-2.png"
+      "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -34,7 +47,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "/cards/apple-card-1.png"
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -47,7 +60,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "/cards/apple-card-2.png"
+      "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
   },
@@ -60,9 +73,22 @@
     "type": "gift-card",
     "stock": 50,
     "images": [
-      "/cards/apple-card-1.png"
+      "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for App Store, iTunes, Apple Music, iCloud storage, and more. Perfect for apps, games, subscriptions, and digital content."
+  },
+  {
+    "sku": "XBOX-1",
+    "brand": "Xbox",
+    "name": "Xbox Gift Card - $1",
+    "price": 1,
+    "denomination": "$1",
+    "type": "gift-card",
+    "stock": 100,
+    "images": [
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
+    ],
+    "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
   {
     "sku": "XBOX-10",
@@ -73,7 +99,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "/cards/xbox-card-1.png"
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
@@ -86,7 +112,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "/cards/xbox-card-2.png"
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
@@ -99,7 +125,7 @@
     "type": "gift-card",
     "stock": 100,
     "images": [
-      "/cards/xbox-card-1.png"
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
@@ -112,7 +138,7 @@
     "type": "gift-card",
     "stock": 75,
     "images": [
-      "/cards/xbox-card-2.png"
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=800&fit=crop"
     ],
     "description": "Redeemable for games, add-ons, movies, TV shows, and more on Xbox and Microsoft Store. Works across Xbox Series X|S, Xbox One, and Windows."
   },
